@@ -42,6 +42,10 @@ def htmlTagsToMarkdown(tag, isFirstArticle):
         tag.insert_before(style)
         tag.insert_after(style)
         tag.unwrap()
+    elif tag.name == 'a':
+        tag.insert_before('[')
+        tag.insert_after(f']({tag["href"]})')
+        tag.unwrap()
     elif tag.name == 'span':
         tag.insert_before('*')
         tag.insert_after('*')
@@ -51,6 +55,7 @@ def htmlTagsToMarkdown(tag, isFirstArticle):
     elif tag.name == 'li':
         tag.insert_before(' - ')
         tag.insert_after('\n')
+        tag.unwrap()
     elif tag.name == 'code':
         if '\n' in tag.text:
             tag.insert_before('```\n')
