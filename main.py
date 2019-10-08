@@ -9,16 +9,22 @@ def getUrl(year, day):
     return f'https://adventofcode.com/{year}/day/{day}'
 
 
-def getHtml(year, day):
-    url = getUrl(year, day)
-
+def getResponse(url):
     response = requests.get(url, cookies={'session': os.getenv('SESSION_ID')})
 
     if response.status_code != 200:
         raise ValueError(f"Querying the url {url} for year {year} and day {day} resulted in status code "
                          f"{response.status_code} with the following text: {response.text}")
 
-    return response.text
+    return response
+
+
+def getHtml(year, day):
+    return getResponse(getUrl(year, day)).text
+
+
+def getInput(year, day):
+    return getResponse(getUrl(year, day) + '/input').text
 
 
 # Simplification of https://github.com/dlon/html2markdown/blob/master/html2markdown.py
@@ -87,11 +93,11 @@ def getMarkdown(year, day):
     return markdown
 
 
-def write(fileDir, content):
-    if fileDir:
-        os.makedirs(os.path.dirname(fileDir), exist_ok=True)
+def write(dir, content):
+    if dir:
+        os.makedirs(os.path.dirname(dir), exist_ok=True)
 
-        with open(fileDir, 'w') as file:
+        with open(dir, 'w') as file:
             file.write(content)
     else:
         print(content)
@@ -105,7 +111,7 @@ def logUsage():
 
 def extractArguments():
     try:
-        opts, args = getopt(sys.argv[1:], 'y:d:o:s', ['year=', 'day=', 'output=', 'save'])
+        opts, args = getopt(sys.argv[1:], 'y:d:o:si', ['year=', 'day=', 'output=', 'save', 'input'])
     except GetoptError:
         logUsage()
         sys.exit(1)
@@ -114,6 +120,7 @@ def extractArguments():
     day = None
     output = None
     explicitSave = False
+    downloadInput = False
 
     for opt, arg in opts:
         if opt == '-h':
@@ -127,6 +134,8 @@ def extractArguments():
             output = arg
         elif opt in ('-s', '--save'):
             explicitSave = True
+        elif opt in ('-i', '--input'):
+            downloadInput = True
 
     if year is None:
         now = datetime.now()
@@ -161,13 +170,21 @@ def extractArguments():
     if output or explicitSave:
         file = os.path.join(output if output else '.', folderName, 'README.md')
 
-    return year, day, file
+    input = None
+
+    if downloadInput:
+        input = os.path.join(output if output else '.', folderName, 'input.txt')
+
+    return year, day, file, input
 
 
 # JavaScript version: https://github.com/kfarnung/aoc-to-markdown
 if __name__ == '__main__':
-    year, day, fileDir = extractArguments()
+    year, day, fileDir, inputDir = extractArguments()
 
     markdown = getMarkdown(year, day)
 
     write(fileDir, markdown)
+
+    if inputDir:
+        write(inputDir, getInput(year, day))
