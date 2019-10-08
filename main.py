@@ -87,28 +87,49 @@ def getMarkdown(year, day):
     return markdown
 
 
+def write(fileDir, content):
+    if fileDir:
+        os.makedirs(os.path.dirname(fileDir), exist_ok=True)
+
+        with open(fileDir, 'w') as file:
+            file.write(content)
+    else:
+        print(content)
+
+
 def logUsage():
-    print(f'Usage: {sys.argv[0]} [-y <year>] [-d <day>]')
+    print(f'Usage: {sys.argv[0]} [-y <year>] [-d <day>] [-o <output_dir>] [-n <filename>] [-s]')
+    print('`-s` argument indicates whether the markdown should be printed or not. Only relevant when not indicating '
+          'neither output_dir nor filename.')
 
 
 def extractArguments():
     try:
-        opts, args = getopt(sys.argv[1:], 'y:d:', ['year=', 'day='])
+        opts, args = getopt(sys.argv[1:], 'y:d:o:n:s', ['year=', 'day=', 'output=', 'name=', 'save'])
     except GetoptError:
         logUsage()
         sys.exit(1)
 
     year = None
     day = None
+    output = None
+    filename = None
+    explicitSave = False
 
     for opt, arg in opts:
         if opt == '-h':
             logUsage()
             sys.exit(0)
         elif opt in ('-y', '--year'):
-            year = arg
+            year = int(arg)
         elif opt in ('-d', '--day'):
-            day = arg
+            day = int(arg)
+        elif opt in ('-o', '--output'):
+            output = arg
+        elif opt in ('-n', '--name'):
+            filename = arg
+        elif opt in ('-s', '--save'):
+            explicitSave = True
 
     if year is None:
         now = datetime.now()
@@ -121,9 +142,13 @@ def extractArguments():
 
     # Look in the current directory and retrieve the next day until a maximum if 25
     if day is None:
-        folderSyntax = re.compile('^day-(\d){1,2}$')
+        folderSyntax = re.compile('^day-(\d+)$')
 
-        dirs = [int(folderSyntax.search(f).group(1)) for f in os.listdir() if os.path.isdir(f) and folderSyntax.match(f)]
+        prefix = (output if output else '')
+
+        isValidDir = lambda dir: os.path.isdir(prefix + dir) and folderSyntax.match(dir)
+
+        dirs = [int(folderSyntax.search(f).group(1)) for f in os.listdir(output) if isValidDir(f)]
 
         day = max(dirs, default=0) + 1
 
@@ -131,13 +156,21 @@ def extractArguments():
             raise ValueError(f'No day was provided as argument to the script. '
                              f'When trying to deduce the day, it got to day {day} which is not valid (maximum is 25). '
                              f'Take a look at the directory and check what is the last day that there is a directory.')
-            sys.exit(1)
 
-    return year, day
+    file = None
+
+    folderName = 'day-' + f'{day:02d}'
+
+    if output or filename or explicitSave:
+        file = os.path.join(output if output else '.', folderName, filename if filename else 'README.md')
+
+    return year, day, file
 
 
 # JavaScript version: https://github.com/kfarnung/aoc-to-markdown
 if __name__ == '__main__':
-    year, day = extractArguments()
+    year, day, fileDir = extractArguments()
 
     markdown = getMarkdown(year, day)
+
+    write(fileDir, markdown)
