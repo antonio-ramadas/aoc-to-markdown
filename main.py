@@ -1,7 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
+from datetime import datetime
 from getopt import getopt, GetoptError
-import os, sys
+import os, sys, re
 
 
 def getUrl(year, day):
@@ -81,24 +82,57 @@ def getMarkdown(year, day):
     return markdown
 
 
-# JavaScript version: https://github.com/kfarnung/aoc-to-markdown
-if __name__ == '__main__':
+def logUsage():
+    print(f'Usage: {sys.argv[0]} [-y <year>] [-d <day>]')
+
+
+def extractArguments():
     try:
         opts, args = getopt(sys.argv[1:], 'y:d:', ['year=', 'day='])
     except GetoptError:
-        print(f'Usage: {sys.argv[0]} -y <year> -d <day>')
+        logUsage()
         sys.exit(1)
 
-    year = 2019
-    day = 1
+    year = None
+    day = None
 
     for opt, arg in opts:
         if opt == '-h':
-            print(f'Usage: {sys.argv[0]} -y <year> -d <day>')
+            logUsage()
             sys.exit(0)
         elif opt in ('-y', '--year'):
             year = arg
         elif opt in ('-d', '--day'):
             day = arg
 
-    print(getMarkdown(year, day))
+    if year is None:
+        now = datetime.now()
+
+        year = now.year
+
+        if now.month != 12:
+            # If at the current year it is not December, then go to the previous year
+            year -= 1
+
+    # Look in the current directory and retrieve the next day until a maximum if 25
+    if day is None:
+        folderSyntax = re.compile('^day-(\d){1,2}$')
+
+        dirs = [int(folderSyntax.search(f).group(1)) for f in os.listdir() if os.path.isdir(f) and folderSyntax.match(f)]
+
+        day = max(dirs, default=0) + 1
+
+        if day > 25:
+            raise ValueError(f'No day was provided as argument to the script. '
+                             f'When trying to deduce the day, it got to day {day} which is not valid (maximum is 25). '
+                             f'Take a look at the directory and check what is the last day that there is a directory.')
+            sys.exit(1)
+
+    return year, day
+
+
+# JavaScript version: https://github.com/kfarnung/aoc-to-markdown
+if __name__ == '__main__':
+    year, day = extractArguments()
+
+    markdown = getMarkdown(year, day)
