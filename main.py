@@ -98,14 +98,14 @@ def write(fileDir, content):
 
 
 def logUsage():
-    print(f'Usage: {sys.argv[0]} [-y <year>] [-d <day>] [-o <output_dir>] [-n <filename>] [-s]')
+    print(f'Usage: {sys.argv[0]} [-y <year>] [-d <day>] [-o <output_dir>] [-s]')
     print('`-s` argument indicates whether the markdown should be printed or not. Only relevant when not indicating '
           'neither output_dir nor filename.')
 
 
 def extractArguments():
     try:
-        opts, args = getopt(sys.argv[1:], 'y:d:o:n:s', ['year=', 'day=', 'output=', 'name=', 'save'])
+        opts, args = getopt(sys.argv[1:], 'y:d:o:s', ['year=', 'day=', 'output=', 'save'])
     except GetoptError:
         logUsage()
         sys.exit(1)
@@ -113,7 +113,6 @@ def extractArguments():
     year = None
     day = None
     output = None
-    filename = None
     explicitSave = False
 
     for opt, arg in opts:
@@ -126,8 +125,6 @@ def extractArguments():
             day = int(arg)
         elif opt in ('-o', '--output'):
             output = arg
-        elif opt in ('-n', '--name'):
-            filename = arg
         elif opt in ('-s', '--save'):
             explicitSave = True
 
@@ -161,8 +158,8 @@ def extractArguments():
 
     folderName = 'day-' + f'{day:02d}'
 
-    if output or filename or explicitSave:
-        file = os.path.join(output if output else '.', folderName, filename if filename else 'README.md')
+    if output or explicitSave:
+        file = os.path.join(output if output else '.', folderName, 'README.md')
 
     return year, day, file
 
