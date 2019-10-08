@@ -87,13 +87,13 @@ def get_markdown(year, day):
     soup = BeautifulSoup(get_html(year, day), features="html.parser")
 
     articles = soup.body.main.findAll('article', recursive=False)
-    markdown = ''
+    content = ''
 
     for i, article in enumerate(articles):
         html_tags_to_markdown(article, i == 0)
-        markdown += ''.join([tag.string for tag in article.contents])
+        content += ''.join([tag.string for tag in article.contents])
 
-    return markdown
+    return content
 
 
 def write(directory, content):
@@ -151,7 +151,7 @@ def extract_arguments():
 
     # Look in the current directory and retrieve the next day until a maximum if 25
     if day is None:
-        folder_syntax = re.compile('^day-(\d+)$')
+        folder_syntax = re.compile('^day-(\\d+)$')
 
         prefix = (output if output else '')
 
