@@ -2,7 +2,10 @@ import os
 import re
 import sys
 from datetime import datetime
+from distutils.errors import DistutilsFileError
+from distutils.file_util import copy_file
 from getopt import getopt, GetoptError
+from distutils.dir_util import copy_tree
 
 import requests
 from bs4 import BeautifulSoup
@@ -106,15 +109,40 @@ def write(directory, content):
         print(content)
 
 
-def print_usage():
-    print(f'Usage: {sys.argv[0]} [-y <year>] [-d <day>] [-o <output_dir>] [-s]')
-    print('`-s` argument indicates whether the markdown should be printed or not. Only relevant when not indicating '
-          'neither output_dir nor filename.')
-
-
-def extract_arguments():
+def copy(src, dst):
     try:
-        opts, args = getopt(sys.argv[1:], 'y:d:o:si', ['year=', 'day=', 'output=', 'save', 'input'])
+        copy_tree(src, dst)
+    except DistutilsFileError:
+        copy_file(src, dst)
+
+
+def print_usage():
+    print(f'Usage: {sys.argv[0]} [-h] [-y <year>] [-d <day>] [-o <output_dir>] [-b <boilerplate>] [-s] [-i]')
+    print(' -h, --help          Optional parameter to print this message')
+    print(' -y, --year          Optional parameter to indicate the year of the problem')
+    print(' -d, --day           Optional parameter to indicate the day of the problem')
+    print(' -o, --output        Optional parameter to indicate the path of the output (default = ".")')
+    print(' -b, --boilerplate   Optional parameter to copy a directory/file to the output')
+    print(' -s, --save          Optional argument to indicate that the markdown should not be printed to stdout, but to'
+          ' a file')
+    print(' -i, --input         Optional argument to indicate that the input is to be downloaded and saved to a file')
+    print()
+    print('Extended description:')
+    print('--year, if not given, defaults to the current year if in december; otherwise is the current year')
+    print('--day, if not given, defaults to the first day which has not been retrieved (checks for directories named '
+          '"day-<day>"); if all days have been retrieved, then go drink some hot chocolate and enjoy the rest of the '
+          'day')
+    print('--output is the prefix path where the folder (syntax: "day-<day>") will be created')
+    print('--boilerplate is an argument useful to copy the solution boilerplate to help you get started')
+    print('--save is only necessary if you want to save directly to a file and --output is not given')
+    print()
+    print('Example:')
+    print(f'{sys.argv[0]} -y 2018 -d 1 -o my-solution-directory -b my-boilerplate -i')
+
+
+def parse_arguments():
+    try:
+        opts, args = getopt(sys.argv[1:], 'y:d:o:b:si', ['year=', 'day=', 'output=', 'boilerplate=', 'save', 'input'])
     except GetoptError:
         print_usage()
         sys.exit(1)
@@ -122,6 +150,7 @@ def extract_arguments():
     year = None
     day = None
     output = None
+    boilerplate_from_arg = None
     explicit_save = False
     download_input = False
 
@@ -135,10 +164,18 @@ def extract_arguments():
             day = int(arg)
         elif opt in ('-o', '--output'):
             output = arg
+        elif opt in ('-b', '--boilerplate'):
+            boilerplate_from_arg = arg
         elif opt in ('-s', '--save'):
             explicit_save = True
         elif opt in ('-i', '--input'):
             download_input = True
+
+    return year, day, output, boilerplate_from_arg, explicit_save, download_input
+
+
+def extract_arguments():
+    year, day, output, boilerplate_from_arg, explicit_save, download_input = parse_arguments()
 
     if year is None:
         now = datetime.now()
@@ -167,24 +204,25 @@ def extract_arguments():
                              f'When trying to deduce the day, it got to day {day} which is not valid (maximum is 25). '
                              f'Take a look at the directory and check what is the last day that there is a directory.')
 
-    file_dir = None
-
     folder_name = 'day-' + f'{day:02d}'
 
+    file_dir = None
     if output or explicit_save:
         file_dir = os.path.join(output if output else '.', folder_name, 'README.md')
 
     input_dir = None
-
     if download_input:
         input_dir = os.path.join(output if output else '.', folder_name, 'input.txt')
 
-    return year, day, file_dir, input_dir
+    boilerplate_to_dir = os.path.join(output if output else '.', folder_name)
+
+    return year, day, file_dir, input_dir, boilerplate_from_arg, boilerplate_to_dir
 
 
 # JavaScript version: https://github.com/kfarnung/aoc-to-markdown
 if __name__ == '__main__':
-    problem_year, problem_day, file_directory, input_directory = extract_arguments()
+    problem_year, problem_day, file_directory, input_directory, boilerplate_from, boilerplate_to = \
+        extract_arguments()
 
     markdown = get_markdown(problem_year, problem_day)
 
@@ -192,3 +230,6 @@ if __name__ == '__main__':
 
     if input_directory:
         write(input_directory, get_input(problem_year, problem_day))
+
+    if boilerplate_from and boilerplate_to:
+        copy(boilerplate_from, boilerplate_to)
