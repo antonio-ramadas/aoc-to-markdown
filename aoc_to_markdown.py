@@ -131,6 +131,9 @@ def print_usage():
           ' a file')
     print(' -i, --input         Optional argument to indicate that the input is to be downloaded and saved to a file')
     print()
+    print('SESSION_ID environment flag is required to download part 2 of the problem. This session id can be copied '
+          'from the requests made on the Advent Of Code website after you login.')
+    print()
     print('Extended description:')
     print('--year, if not given, defaults to the current year if in december; otherwise is the current year')
     print('--day, if not given, defaults to the first day which has not been retrieved (checks for directories named '
@@ -223,8 +226,7 @@ def extract_arguments():
     return year, day, file_dir, input_dir, boilerplate_from_arg, boilerplate_to_dir
 
 
-# JavaScript version: https://github.com/kfarnung/aoc-to-markdown
-if __name__ == '__main__':
+def main():
     problem_year, problem_day, file_directory, input_directory, boilerplate_from, boilerplate_to = \
         extract_arguments()
 
@@ -237,3 +239,8 @@ if __name__ == '__main__':
 
     if boilerplate_from and boilerplate_to:
         copy(boilerplate_from, boilerplate_to)
+
+
+# JavaScript version: https://github.com/kfarnung/aoc-to-markdown
+if __name__ == '__main__':
+    main()
