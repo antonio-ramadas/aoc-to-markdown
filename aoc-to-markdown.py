@@ -117,6 +117,10 @@ def copy(src, dst):
 
 
 def print_usage():
+    print('### Advent Of Code to Markdown ###')
+    print('Parse the problem statement to markdown with option to also download the input while keeping everything '
+          'organised')
+    print()
     print(f'Usage: {sys.argv[0]} [-h] [-y <year>] [-d <day>] [-o <output_dir>] [-b <boilerplate>] [-s] [-i]')
     print(' -h, --help          Optional parameter to print this message')
     print(' -y, --year          Optional parameter to indicate the year of the problem')
