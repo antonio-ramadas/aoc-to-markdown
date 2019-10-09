@@ -111,9 +111,9 @@ def write(directory, content):
 
 def copy(src, dst):
     try:
-        copy_tree(src, dst)
+        copy_tree(src, dst, update=True)
     except DistutilsFileError:
-        copy_file(src, dst)
+        copy_file(src, dst, update=True)
 
 
 def print_usage():
@@ -121,7 +121,7 @@ def print_usage():
     print('Parse the problem statement to markdown with option to also download the input while keeping everything '
           'organised')
     print()
-    print(f'Usage: {sys.argv[0]} [-h] [-y <year>] [-d <day>] [-o <output_dir>] [-b <boilerplate>] [-s] [-i]')
+    print(f'Usage: {sys.argv[0]} [-h] [-y <year>] [-d <day>] [-o <output_dir>] [-b <boilerplate_dir>] [-s] [-i]')
     print(' -h, --help          Optional parameter to print this message')
     print(' -y, --year          Optional parameter to indicate the year of the problem')
     print(' -d, --day           Optional parameter to indicate the day of the problem')

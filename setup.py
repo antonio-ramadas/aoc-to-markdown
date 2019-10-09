@@ -1,13 +1,11 @@
 from setuptools import setup
 
-with open('requirements.txt') as f:
-    install_requires = f.read().splitlines()
-
 setup(
     name='aoc-to-markdown',
-    version='0.1.0',
+    version='0.2.0',
     python_requires=">=3.*",
-    install_requires=install_requires,
+    install_requires=['beautifulsoup4', 'requests'],
+    py_modules=['aoc_to_markdown'],
     entry_points={
         'console_scripts': ['aoc-to-markdown=aoc_to_markdown:main']
     },
