@@ -106,7 +106,7 @@ If you want even simpler, then download from `PyPi <https://pypi.org/project/aoc
 👨‍💻 Similar
 **********
 
- - There is `another project in JavaScript <https://github.com/kfarnung/aoc-to-markdown>`_ that also parses the problem statement to Markdown.
+- There is `another project in JavaScript <https://github.com/kfarnung/aoc-to-markdown>`_ that also parses the problem statement to Markdown.
 
 
 .. |pypi| image:: https://img.shields.io/pypi/v/aoc-to-markdown   :alt: PyPI
