@@ -1,8 +1,16 @@
+import codecs
+
 from setuptools import setup
+
+with codecs.open('README.rst', encoding='utf-8') as f:
+    long_description = f.read().encode('ascii', 'ignore').decode('ascii')
 
 setup(
     name='aoc-to-markdown',
-    version='0.2.0',
+    version='0.2.2',
+    description='Parses Advent Of Code problem statement to markdown with option to also download the input while '
+                'keeping everything organised',
+    long_description=long_description,
     python_requires=">=3.*",
     install_requires=['beautifulsoup4', 'requests'],
     py_modules=['aoc_to_markdown'],
@@ -13,8 +21,6 @@ setup(
     license='MIT',
     author='António Ramadas',
     author_email='antonio_ramadas@hotmail.com',
-    description='Parses Advent Of Code problem statement to markdown with option to also download the input while '
-                'keeping everything organised',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
@@ -30,8 +36,6 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3 :: Only'
     ]
 )
