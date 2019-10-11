@@ -71,7 +71,7 @@ If you want even simpler, then download from `PyPi <https://pypi.org/project/aoc
 
   pip install aoc-to-markdown
 
-  aoc_to_markdown.py -h
+  aoc_to_markdown -h
 
 
 ************
