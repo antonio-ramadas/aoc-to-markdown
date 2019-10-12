@@ -7,7 +7,7 @@ with codecs.open('README.rst', encoding='utf-8') as f:
 
 setup(
     name='aoc-to-markdown',
-    version='0.2.2',
+    version='0.2.3',
     description='Parses Advent Of Code problem statement to markdown with option to also download the input while '
                 'keeping everything organised',
     long_description=long_description,

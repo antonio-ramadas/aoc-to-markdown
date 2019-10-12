@@ -2,7 +2,7 @@
 Advent Of Code to Markdown
 ##########################
 
-|pypi| |python-version|
+|downloads| |pypi| |python-version|
 
 Parses `Advent Of Code <https://adventofcode.com/>`_ problem statement to markdown with option to also download the input while keeping everything organised.
 
@@ -109,7 +109,12 @@ If you want even simpler, then download from `PyPi <https://pypi.org/project/aoc
 - There is `another project in JavaScript <https://github.com/kfarnung/aoc-to-markdown>`_ that also parses the problem statement to Markdown.
 
 
-.. |pypi| image:: https://img.shields.io/pypi/v/aoc-to-markdown
+.. |downloads| image:: https://pepy.tech/badge/aoc-to-markdown
+               :alt: Total number of downloads
+               :target: https://pepy.tech/project/aoc-to-markdown
+.. |pypi| image:: https://img.shields.io/pypi/v/aoc-to-markdown?color=blue
           :alt: PyPI
+          :target: https://pypi.org/project/aoc-to-markdown/
 .. |python-version| image:: https://img.shields.io/pypi/pyversions/aoc-to-markdown
                     :alt: PyPI - Python Version
+                    :target: https://pypi.org/project/aoc-to-markdown/
