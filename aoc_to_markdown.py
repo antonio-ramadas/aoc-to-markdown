@@ -50,7 +50,7 @@ def html_tags_to_markdown(tag, is_first_article):
         tag.insert_after('\n')
         tag.unwrap()
     elif tag.name == 'em':
-        style = '**' if tag.has_attr('class') and tag['class'] == 'star' else '*'
+        style = '**' if tag.has_attr('class') and 'star' in tag['class'] else '*'
         tag.insert_before(style)
         tag.insert_after(style)
         tag.unwrap()
