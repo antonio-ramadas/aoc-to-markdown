@@ -16,7 +16,10 @@ def get_url(year, day):
 
 
 def get_response(url):
-    response = requests.get(url, cookies={'session': os.getenv('SESSION_ID')})
+    response = requests.get(url,
+        headers={'User-Agent': 'github.com/antonio-ramadas/aoc-to-markdown by antonio_ramadas@hotmail.com'},
+        cookies={'session': os.getenv('SESSION_ID')}
+    )
 
     if response.status_code != 200:
         raise ValueError(f"Querying the url {url} resulted in status code {response.status_code} with the following "
